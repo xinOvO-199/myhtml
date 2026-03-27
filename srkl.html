@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>✨ 生日祝福贺卡 ✨</title>
+    <!-- 引入 QRCode 库，用于生成二维码 -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs2-fix@0.0.1/qrcode.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(145deg, #ff9a9e 0%, #fad0c4 30%, #fad0c4 70%, #ffdde1 100%);
+            background-attachment: fixed;
+            font-family: system-ui, -apple-system, 'Segoe UI', 'Helvetica Neue', 'Noto Sans', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* 漂浮艺术元素（纯 CSS 动画） */
+        .floating-orb {
+            position: absolute;
+            pointer-events: none;
+            z-index: 0;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255,255,240,0.7), rgba(255,200,200,0.3));
+            filter: blur(2px);
+            animation: floatAround 12s infinite ease-in-out;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+        }
+
+        .floating-shape {
+            position: absolute;
+            pointer-events: none;
+            font-size: 1.8rem;
+            opacity: 0.4;
+            animation: driftUp 14s infinite linear;
+            z-index: 0;
+        }
+
+        @keyframes floatAround {
+            0% { transform: translateY(0px) translateX(0) rotate(0deg); }
+            50% { transform: translateY(-30px) translateX(15px) rotate(8deg); }
+            100% { transform: translateY(0px) translateX(0) rotate(0deg); }
+        }
+
+        @keyframes driftUp {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0.2; }
+            80% { opacity: 0.6; }
+            100% { transform: translateY(-20vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* 主卡片 — 毛玻璃温馨风格 */
+        .birthday-card {
+            position: relative;
+            z-index: 10;
+            max-width: 560px;
+            width: 100%;
+            background: rgba(255, 250, 240, 0.88);
+            backdrop-filter: blur(10px);
+            border-radius: 72px 48px 72px 48px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255,255,210,0.5) inset;
+            padding: 2rem 1.8rem 2.2rem;
+            text-align: center;
+            animation: cardGlow 1.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+
+        @keyframes cardGlow {
+            0% { opacity: 0; transform: scale(0.92) translateY(30px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .greeting-title {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #e85d04, #ff5e7c, #ffb347);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 8px rgba(255,100,100,0.2);
+            display: inline-block;
+            animation: titlePop 0.8s ease-out;
+        }
+
+        @keyframes titlePop {
+            0% { transform: scale(0.8); opacity: 0; }
+            80% { transform: scale(1.05); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .to-name {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(145deg, #ffb347, #ff6f61);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin: 8px 0 6px;
+            word-break: break-word;
+            padding: 0 8px;
+            display: inline-block;
+            border-bottom: 3px dashed #ffb07c;
+        }
+
+        .cake-zone {
+            font-size: 5.2rem;
+            margin: 16px 0 8px;
+            filter: drop-shadow(0 12px 12px rgba(0,0,0,0.15));
+            animation: bounceCake 2s infinite ease-in-out;
+            transform-origin: center;
+        }
+
+        @keyframes bounceCake {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-12px) rotate(2deg); }
+        }
+
+        .bless-message {
+            font-size: 1.2rem;
+            line-height: 1.5;
+            color: #5d3a1a;
+            background: rgba(255,245,225,0.7);
+            border-radius: 48px;
+            padding: 12px 16px;
+            margin: 18px 0 12px;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+            backdrop-filter: blur(2px);
+        }
+
+        .custom-wish {
+            font-size: 1rem;
+            color: #b5472d;
+            background: #fff2e0;
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 40px;
+            margin: 10px 0 6px;
+            font-style: italic;
+            font-weight: 500;
+        }
+
+        /* 二维码区域 */
+        .qr-section {
+            margin-top: 20px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,160,120,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .qr-code {
+            width: 110px;
+            height: 110px;
+            background: white;
+            padding: 8px;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .qr-code img, .qr-code canvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .share-note {
+            font-size: 0.75rem;
+            color: #b85c2a;
+            background: rgba(255,240,210,0.7);
+            padding: 4px 12px;
+            border-radius: 30px;
+        }
+
+        .signature {
+            margin-top: 20px;
+            font-size: 0.85rem;
+            color: #b85c2a;
+            opacity: 0.8;
+            border-top: 1px solid rgba(255,160,120,0.4);
+            padding-top: 16px;
+            font-weight: 400;
+            letter-spacing: 1px;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 550px) {
+            .birthday-card {
+                padding: 1.5rem 1.2rem 1.8rem;
+                border-radius: 48px 32px 48px 32px;
+            }
+            .greeting-title {
+                font-size: 2.2rem;
+            }
+            .to-name {
+                font-size: 1.8rem;
+            }
+            .cake-zone {
+                font-size: 4rem;
+            }
+            .bless-message {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 漂浮背景元素（纯装饰） -->
+<div class="floating-orb" style="width: 80px; height: 80px; top: 10%; left: -20px; animation-duration: 15s;"></div>
+<div class="floating-orb" style="width: 50px; height: 50px; bottom: 15%; right: 5%; background: radial-gradient(circle, #ffd699, #ffb77c); animation-duration: 18s; animation-delay: -3s;"></div>
+<div class="floating-orb" style="width: 110px; height: 110px; top: 60%; left: -30px; background: radial-gradient(circle, #ffe0b5, #ffae70); opacity: 0.3; animation-duration: 20s;"></div>
+<div class="floating-shape" style="top: 5%; left: 80%; animation-duration: 11s; animation-delay: 0s;">🎈</div>
+<div class="floating-shape" style="top: 20%; left: 15%; animation-duration: 13s; animation-delay: -2s;">💖</div>
+<div class="floating-shape" style="top: 75%; left: 90%; animation-duration: 16s; animation-delay: -5s;">✨</div>
+<div class="floating-shape" style="top: 45%; left: -5%; animation-duration: 19s; animation-delay: -1s;">🎂</div>
+<div class="floating-shape" style="top: 85%; left: 20%; animation-duration: 12s; animation-delay: -7s;">🎉</div>
+<div class="floating-shape" style="top: 10%; left: 50%; animation-duration: 22s; font-size: 2.2rem; opacity: 0.3;">⭐</div>
+
+<main class="birthday-card">
+    <div class="greeting-title">🎊 HAPPY BIRTHDAY 🎊</div>
+    <!-- 寿星名字（可手动修改） -->
+    <div class="to-name">✨ 小叶无忧 ✨</div>
+    <div class="cake-zone">🎂🎈🎁</div>
+    <div class="bless-message">
+        🌟 愿你每一天都奔走在自己的热爱里，<br>
+        眼里有光，笑里坦荡，所遇皆温柔 🌟
+    </div>
+    <div class="custom-wish">
+        💌 生日快乐！愿岁岁年年，平安喜乐 💌
+    </div>
+    
+    <!-- 二维码区域：生成当前页面的二维码 -->
+    <div class="qr-section">
+        <div class="qr-code" id="qrcode"></div>
+        <div class="share-note">
+            📲 扫一扫即可打开此祝福页
+        </div>
+    </div>
+    
+    <div class="signature">
+        ❤️ 来自最爱你的朋友 · 特别心意 ❤️
+    </div>
+</main>
+
+<script>
+    // 生成二维码（只生成一次，无任何交互事件）
+    window.addEventListener('load', function() {
+        var currentUrl = window.location.href;
+        var qrcodeDiv = document.getElementById('qrcode');
+        if (qrcodeDiv && typeof QRCode !== 'undefined') {
+            // 清空可能存在的子元素
+            qrcodeDiv.innerHTML = '';
+            new QRCode(qrcodeDiv, {
+                text: currentUrl,
+                width: 100,
+                height: 100,
+                colorDark: "#000000",
+                colorLight: "#ffffff",
+                correctLevel: QRCode.CorrectLevel.M
+            });
+        }
+    });
+</script>
+
+</body>
+</html>
